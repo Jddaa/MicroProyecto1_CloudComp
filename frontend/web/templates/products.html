@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Página de administración de productos -->
+    <title>Product Management</title>
+
+    <!-- Bootstrap solo afecta estilos visuales -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<!-- NAVBAR
+     Navegación hacia diferentes páginas del frontend Flask -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+  <!-- Ruta principal -->
+  <a class="navbar-brand" href="/">Store Management</a>
+
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav ml-auto">
+
+      <!-- Página actual: gestión de productos -->
+      <li class="nav-item active">
+        <a class="nav-link" href="/products">Products</a>
+      </li>
+
+      <!-- Gestión de usuarios -->
+      <li class="nav-item">
+        <a class="nav-link" href="/users">Users</a>
+      </li>
+
+      <!-- Panel admin de órdenes -->
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/orders">Orders</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+
+<div class="container">
+
+    <!-- FORMULARIO PARA CREAR PRODUCTOS -->
+
+    <div class="form-container">
+        <h2>Add New Product</h2>
+
+        <!-- Este formulario es controlado por JavaScript -->
+        <form id="add-product-form">
+
+            <!-- Estos IDs son usados por scriptProducts.js
+                 para leer los datos y enviarlos al backend -->
+
+            <div class="form-group">
+                <input type="text" class="form-control" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <input type="text" class="form-control" id="description" required>
+            </div>
+
+            <div class="form-group">
+                <input type="number" step="0.01" class="form-control" id="price" required>
+            </div>
+
+            <div class="form-group">
+                <input type="number" class="form-control" id="stock" required>
+            </div>
+
+            <!-- El submit no envía el formulario normal.
+                 JavaScript intercepta el evento y ejecuta createProduct() -->
+            <button type="submit" class="btn btn-primary">
+                Create Product
+            </button>
+
+        </form>
+    </div>
+
+
+
+    <!-- TABLA DONDE SE CARGAN LOS PRODUCTOS DESDE EL BACKEND -->
+
+    <h2 class="mt-5">Product List</h2>
+
+    <table id="product-list" class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <!-- scriptProducts.js inserta aquí las filas -->
+        <tbody></tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- SCRIPT PRINCIPAL DE PRODUCTOS -->
+<script src="static/scriptProducts.js"></script>
+
+<!-- Este script contiene las funciones:
+
+    getProducts()
+        - GET http://192.168.100.3:5003/api/products
+        - carga todos los productos en la tabla
+
+    createProduct()
+        - POST http://192.168.100.3:5003/api/products
+        - crea un nuevo producto
+
+    updateProduct()
+        - PUT /api/products/{id}
+        - actualiza un producto
+
+    deleteProduct()
+        - DELETE /api/products/{id}
+        - elimina un producto
+-->
+
+
+
+<script>
+
+// Intercepta el submit del formulario
+// para evitar que la página se recargue.
+document.getElementById("add-product-form")
+.addEventListener("submit", function(e){
+
+    // Cancela el comportamiento normal del formulario
+    e.preventDefault();
+
+    // Llama a la función createProduct()
+    // definida en scriptProducts.js
+    createProduct();
+});
+
+
+// Carga automática de productos al abrir la página
+window.onload = function() {
+
+    // Hace fetch al Products Service
+    // para llenar la tabla de productos
+    getProducts();
+};
+
+</script>
+
+</body>
+</html>

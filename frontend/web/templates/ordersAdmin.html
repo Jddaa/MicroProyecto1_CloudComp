@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Página del panel admin para ver órdenes -->
+    <title>Admin - Orders</title>
+
+    <!-- Bootstrap solo afecta estilos -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  </head>
+
+  <body>
+
+    <!-- NAVBAR
+         Navegación hacia diferentes rutas del frontend Flask -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <!-- Ruta principal -->
+      <a class="navbar-brand" href="/">Mini Store</a>
+
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto align-items-center">
+
+          <!-- CRUD de productos -->
+          <li class="nav-item mr-2">
+            <a class="nav-link" href="/products">Products</a>
+          </li>
+
+          <!-- CRUD de usuarios -->
+          <li class="nav-item mr-2">
+            <a class="nav-link" href="/users">Users</a>
+          </li>
+
+          <!-- Página actual: panel admin de órdenes -->
+          <li class="nav-item mr-2">
+            <a class="nav-link active" href="/admin/orders">Orders</a>
+          </li>
+
+          <!-- Volver al inicio -->
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+
+        </ul>
+      </div>
+    </nav>
+
+
+
+    <div class="container">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <!-- Título de la tabla -->
+        <h2 class="mb-0">All Orders (Admin)</h2>
+
+        <!-- Botón que el JS usa para recargar las órdenes -->
+        <button id="btnRefresh" class="btn btn-secondary btn-sm">
+          Refresh
+        </button>
+
+      </div>
+
+      <!-- Contenedor donde el JS muestra alertas -->
+      <div id="alertBox"></div>
+
+
+      <!-- TABLA DE ÓRDENES -->
+
+      <div class="table-responsive">
+        <table class="table table-striped" id="ordersTable">
+
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Email</th>
+              <th>Total</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <!-- El JS inserta aquí las órdenes que obtiene del backend -->
+          <tbody></tbody>
+
+        </table>
+      </div>
+
+    </div>
+
+
+
+    <!-- MODAL PARA VER DETALLE DE UNA ORDEN -->
+
+    <div class="modal fade" id="orderModal" tabindex="-1" role="dialog">
+
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+          <div class="modal-header">
+
+            <h5 class="modal-title">Order Details</h5>
+
+            <!-- Cierra el modal -->
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+
+          </div>
+
+          <div class="modal-body">
+
+            <!-- Aquí el JS inserta los detalles de la orden -->
+            <div id="orderDetails"></div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- LIBRERÍAS JS -->
+
+    <!-- jQuery necesario para Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- Bootstrap JS (manejo de modales, alerts, etc.) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <!-- SCRIPT PRINCIPAL DE ESTA PÁGINA -->
+    <script src="/static/scriptOrdersAdmin.js"></script>
+
+    <!-- Este script maneja toda la lógica:
+
+         1️⃣ loadOrders()
+            - Hace fetch a:
+              GET http://192.168.100.3:5004/api/orders
+            - Inserta las órdenes en #ordersTable tbody
+
+         2️⃣ Botón Refresh (#btnRefresh)
+            - vuelve a ejecutar loadOrders()
+
+         3️⃣ Botón "View items"
+            - llama viewOrder(orderId)
+
+         4️⃣ viewOrder(orderId)
+            - hace fetch a:
+              GET /api/orders/{id}
+            - inserta los productos de la orden en #orderDetails
+            - abre el modal #orderModal
+
+    -->
+
+  </body>
+</html>

@@ -1,0 +1,223 @@
+# Este archivo sirve para levantar todos los servicios del sistema
+# usando Docker. En lugar de iniciar cada servicio manualmente,
+# Docker Compose los inicia todos juntos.
+
+services:
+
+  # -------------------------
+  # BASES DE DATOS (1 por microservicio)
+  # -------------------------
+
+  # Este servicio ejecuta Consul.
+  # Consul es una herramienta que permite que los microservicios
+  # se encuentren entre sí automáticamente.
+  consul:
+    image: hashicorp/consul:1.16
+    container_name: consul
+
+    # Este comando inicia Consul como servidor y activa la interfaz web.
+    command: agent -server -ui -client=0.0.0.0 -bootstrap-expect=1
+
+    # El puerto 8500 permite acceder a la interfaz web de Consul.
+    ports:
+      - "8500:8500"
+
+    # Si el contenedor se detiene, Docker lo vuelve a iniciar automáticamente.
+    restart: unless-stopped
+
+
+
+  # -------------------------
+  # BASE DE DATOS DE USUARIOS
+  # -------------------------
+
+  mysqlUsuarios:
+    image: mysql:8.0
+    container_name: mysqlUsuarios
+
+    # Configuración para compatibilidad de autenticación en MySQL.
+    command: --default-authentication-plugin=mysql_native_password
+
+    # Variables de entorno para crear la base de datos.
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: usuarios
+
+    # Puerto para acceder a esta base de datos desde el host.
+    ports:
+      - "3306:3306"
+
+    # volumes permite guardar los datos de forma permanente.
+    volumes:
+
+      # Este archivo SQL se ejecuta automáticamente al iniciar la base de datos.
+      - ./initUsuarios.sql:/docker-entrypoint-initdb.d/initUsuarios.sql:ro
+
+      # Aquí se guardan los datos reales de la base de datos.
+      - mysql_usuarios_data:/var/lib/mysql
+
+    restart: unless-stopped
+
+
+
+  # -------------------------
+  # BASE DE DATOS DE PRODUCTOS
+  # -------------------------
+
+  mysqlProductos:
+    image: mysql:8.0
+    container_name: mysqlProductos
+
+    command: --default-authentication-plugin=mysql_native_password
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: productos
+
+    # Este servicio usa el puerto 3307 para evitar conflicto
+    # con la otra base de datos.
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - ./initProductos.sql:/docker-entrypoint-initdb.d/initProductos.sql:ro
+      - mysql_productos_data:/var/lib/mysql
+
+    restart: unless-stopped
+
+
+
+  # -------------------------
+  # BASE DE DATOS DE ORDENES
+  # -------------------------
+
+  mysqlOrdenes:
+    image: mysql:8.0
+    container_name: mysqlOrdenes
+
+    command: --default-authentication-plugin=mysql_native_password
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ordenes
+
+    # Este usa el puerto 3308.
+    ports:
+      - "3308:3306"
+
+    volumes:
+      - ./initOrdenes.sql:/docker-entrypoint-initdb.d/initOrdenes.sql:ro
+      - mysql_ordenes_data:/var/lib/mysql
+
+    restart: unless-stopped
+
+
+
+  # -------------------------
+  # MICROSERVICIO DE USUARIOS
+  # -------------------------
+
+  micro_users:
+
+    # Docker construye la imagen usando el Dockerfile
+    # que está dentro de la carpeta microUsers.
+    build: ./microUsers
+
+    container_name: micro_users
+
+    # Este servicio depende de la base de datos de usuarios.
+    # Docker iniciará primero mysqlUsuarios.
+    depends_on:
+      - mysqlUsuarios
+
+    # Puerto donde corre el microservicio.
+    ports:
+      - "5002:5002"
+
+    restart: unless-stopped
+
+
+
+  # -------------------------
+  # MICROSERVICIO DE PRODUCTOS
+  # -------------------------
+
+  micro_products:
+
+    # Docker construye la imagen desde la carpeta microProducts.
+    build: ./microProducts
+
+    container_name: micro_products
+
+    # Depende de la base de datos de productos.
+    depends_on:
+      - mysqlProductos
+
+    ports:
+      - "5003:5003"
+
+    restart: unless-stopped
+
+
+
+  # -------------------------
+  # MICROSERVICIO DE ORDENES
+  # -------------------------
+
+  micro_orders:
+
+    # Docker construye la imagen desde la carpeta microOrders.
+    build: ./microOrders
+
+    container_name: micro_orders
+
+    # Este servicio necesita:
+    # - la base de datos de órdenes
+    # - el microservicio de productos
+    depends_on:
+      - mysqlOrdenes
+      - micro_products
+
+    ports:
+      - "5004:5004"
+
+    restart: unless-stopped
+
+
+
+  # -------------------------
+  # FRONTEND
+  # -------------------------
+
+  frontend:
+
+    # Docker construye la imagen desde la carpeta frontend.
+    build: ./frontend
+
+    container_name: frontend
+
+    # El frontend necesita que todos los microservicios estén activos.
+    depends_on:
+      - micro_users
+      - micro_products
+      - micro_orders
+
+    # El frontend corre en el puerto 5001.
+    ports:
+      - "5001:5001"
+
+    restart: unless-stopped
+
+
+
+# -------------------------
+# VOLUMENES DE BASE DE DATOS
+# -------------------------
+
+# Los volúmenes permiten guardar los datos de las bases de datos
+# de forma permanente, incluso si el contenedor se elimina.
+
+volumes:
+  mysql_usuarios_data:
+  mysql_productos_data:
+  mysql_ordenes_data:

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Página de administración de usuarios -->
+    <title>User Management</title>
+
+    <!-- Bootstrap solo afecta estilos -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<!-- NAVBAR
+     Navegación entre páginas del frontend Flask -->
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+  <!-- Ruta principal -->
+  <a class="navbar-brand" href="/">Store Management</a>
+
+  <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav ml-auto">
+
+      <!-- Gestión de productos -->
+      <li class="nav-item">
+        <a class="nav-link" href="/products">Products</a>
+      </li>
+
+      <!-- Página actual: gestión de usuarios -->
+      <li class="nav-item active">
+        <a class="nav-link" href="/users">Users</a>
+      </li>
+
+      <!-- Panel admin de órdenes -->
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/orders">Orders</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+
+
+<div class="container">
+
+    <!-- FORMULARIO PARA CREAR USUARIOS -->
+
+    <div class="form-container">
+        <h2>Add New User</h2>
+
+        <!-- Este formulario es controlado por JavaScript -->
+        <form id="add-user-form">
+
+            <!-- Los IDs de los inputs son usados por scriptUsers.js
+                 para leer los datos y enviarlos al backend -->
+
+            <div class="form-group">
+                <input type="text" class="form-control" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <input type="email" class="form-control" id="email" required>
+            </div>
+
+            <div class="form-group">
+                <input type="text" class="form-control" id="username" required>
+            </div>
+
+            <div class="form-group">
+                <input type="password" class="form-control" id="password" required>
+            </div>
+
+            <!-- Botón que ejecuta createUser()
+                 definida en scriptUsers.js -->
+            <button type="button" class="btn btn-primary" onclick="createUser()">
+                Create User
+            </button>
+
+        </form>
+    </div>
+
+
+
+    <!-- TABLA DONDE SE CARGAN LOS USUARIOS -->
+
+    <h2>Users List</h2>
+
+    <table id="user-list" class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <!-- scriptUsers.js inserta aquí las filas de usuarios -->
+        <tbody></tbody>
+
+    </table>
+
+</div>
+
+
+
+<!-- SCRIPT PRINCIPAL DEL CRUD DE USUARIOS -->
+<script src="static/scriptUsers.js"></script>
+
+<!-- Este script contiene las funciones:
+
+    getUsers()
+        - GET http://192.168.100.3:5002/api/users
+        - obtiene todos los usuarios y los inserta en la tabla
+
+    createUser()
+        - POST http://192.168.100.3:5002/api/users
+        - crea un nuevo usuario
+
+    updateUser()
+        - PUT /api/users/{id}
+        - actualiza un usuario
+
+    deleteUser()
+        - DELETE /api/users/{id}
+        - elimina un usuario
+-->
+
+
+
+<script>
+
+  // Cuando la página se abre
+  // se ejecuta automáticamente getUsers()
+  // para cargar la lista de usuarios.
+  window.onload = function () {
+
+    // Hace fetch al Users Service
+    // para obtener todos los usuarios
+    getUsers();
+
+  };
+
+</script>
+
+</body>
+</html>

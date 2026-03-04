@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Página del catálogo de productos -->
+    <title>Mini Store - Shop</title>
+
+    <!-- Bootstrap solo se usa para estilos -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+
+  <body>
+
+    <!-- NAVBAR
+         Navegación entre páginas del frontend Flask -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+
+      <!-- Ruta principal -->
+      <a class="navbar-brand" href="/">Mini Store</a>
+
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto align-items-center">
+
+          <!-- Ir a la página principal -->
+          <li class="nav-item mr-2">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+
+          <!-- Ir al carrito
+               El número de productos se actualiza dinámicamente
+               en el span #cartCount -->
+          <li class="nav-item mr-2">
+            <a class="nav-link" href="/cart">
+              Cart <span id="cartCount" class="badge badge-light">0</span>
+            </a>
+          </li>
+
+          <!-- Página donde el usuario ve sus órdenes -->
+          <li class="nav-item mr-2">
+            <a class="nav-link" href="/my-orders">My Orders</a>
+          </li>
+
+          <!-- Botón logout manejado por JS -->
+          <li class="nav-item">
+            <button id="btnLogout" class="btn btn-outline-light btn-sm">
+              Logout
+            </button>
+          </li>
+
+        </ul>
+      </div>
+    </nav>
+
+
+
+    <div class="container">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h2 class="mb-0">Shop</h2>
+
+        <!-- Botón usado por el JS para volver a cargar los productos -->
+        <button id="btnRefresh" class="btn btn-secondary btn-sm">
+          Refresh
+        </button>
+
+      </div>
+
+
+      <!-- Contenedor donde el JS muestra alertas -->
+      <div id="alertBox"></div>
+
+
+      <!-- CONTENEDOR DEL CATÁLOGO -->
+
+      <!-- scriptShop.js genera aquí las tarjetas de productos -->
+      <div id="productsGrid" class="row"></div>
+
+    </div>
+
+
+
+    <!-- LIBRERÍAS JS -->
+
+    <!-- jQuery requerido por Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- Bootstrap JS para alerts y componentes -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <!-- SCRIPT PRINCIPAL DEL CATÁLOGO -->
+    <script src="/static/scriptShop.js"></script>
+
+    <!-- Este script controla toda la lógica de la tienda:
+
+        1️⃣ loadProducts()
+           Hace fetch al Products Service
+
+           GET http://192.168.100.3:5003/api/products
+
+           para obtener todos los productos.
+
+        2️⃣ Los productos se renderizan como tarjetas
+           dentro del contenedor:
+
+           #productsGrid
+
+        3️⃣ Cada tarjeta tiene botón:
+           Add to Cart
+
+           que guarda el producto en:
+           localStorage
+
+        4️⃣ El número de productos en el carrito
+           se muestra en:
+
+           #cartCount
+
+        5️⃣ Botón Refresh (#btnRefresh)
+           vuelve a ejecutar loadProducts()
+
+        6️⃣ Botón Logout (#btnLogout)
+           elimina la sesión y redirige al usuario.
+
+    -->
+
+  </body>
+</html>
