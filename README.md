@@ -22,7 +22,7 @@ levantar todos los servicios automáticamente.
 El sistema está dividido en **microservicios independientes**, cada uno
 con su propia base de datos.
 
-Frontend (Flask)\
+Frontend (5001)\
 │\
 ▼
 
@@ -92,16 +92,16 @@ Esto iniciará automáticamente:
 
 # 🌐 Puertos del sistema
 
-  Servicio           Puerto
-  ------------------ --------
-  Frontend           5001
-  Users Service      5002
-  Products Service   5003
-  Orders Service     5004
-  Consul             8500
-  MySQL Usuarios     3306
-  MySQL Productos    3307
-  MySQL Ordenes      3308
+| Servicio           | Puerto |
+|--------------------|--------|
+| Frontend           | 5001   |
+| Users Service      | 5002   |
+| Products Service   | 5003   |
+| Orders Service     | 5004   |
+| Consul             | 8500   |
+| MySQL Usuarios     | 3306   |
+| MySQL Productos    | 3307   |
+| MySQL Ordenes      | 3308   |
 
 ------------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ servicios.
 
 Panel web:
 
-http://localhost:8500
+http://192.168.100.3:8500
 
 ------------------------------------------------------------------------
 
@@ -183,6 +183,7 @@ Flujo:
 
 ------------------------------------------------------------------------
 
-# 👨‍💻 Autor
+# 👨‍💻 Autores
+Carlos Garzón y Juan Mendoza - Ingenieria Multimedia UAO
 
 Proyecto desarrollado para práctica de arquitectura de microservicios.
